@@ -1,0 +1,1184 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-06-27T00:00:00.000Z",
+  "__export_source": "restful-booker-test-suite",
+  "resources": [
+    {
+      "_id": "wrk_restfulbooker",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Restful Booker API",
+      "description": "API test collection generated from the Jest+axios test suite"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_restfulbooker",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "https://restful-booker.herokuapp.com",
+        "username": "admin",
+        "password": "password123",
+        "token": "",
+        "booking_id": ""
+      }
+    },
+
+    {
+      "_id": "grp_auth",
+      "_type": "request_group",
+      "parentId": "wrk_restfulbooker",
+      "name": "01 - Auth"
+    },
+    {
+      "_id": "grp_crud",
+      "_type": "request_group",
+      "parentId": "wrk_restfulbooker",
+      "name": "02 - Booking CRUD"
+    },
+    {
+      "_id": "grp_validation",
+      "_type": "request_group",
+      "parentId": "wrk_restfulbooker",
+      "name": "03 - Booking Validation"
+    },
+
+    {
+      "_id": "grp_auth_valid",
+      "_type": "request_group",
+      "parentId": "grp_auth",
+      "name": "Valid credentials"
+    },
+    {
+      "_id": "grp_auth_invalid",
+      "_type": "request_group",
+      "parentId": "grp_auth",
+      "name": "Invalid credentials"
+    },
+    {
+      "_id": "grp_auth_malformed",
+      "_type": "request_group",
+      "parentId": "grp_auth",
+      "name": "Missing or malformed body"
+    },
+    {
+      "_id": "grp_auth_protected",
+      "_type": "request_group",
+      "parentId": "grp_auth",
+      "name": "Protected endpoints - unauthenticated"
+    },
+
+    {
+      "_id": "req_auth_valid_credentials",
+      "_type": "request",
+      "parentId": "grp_auth_valid",
+      "name": "POST /auth — valid credentials",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"username\": \"{{ _.username }}\",\n  \"password\": \"{{ _.password }}\"\n}"
+      },
+      "description": "Returns 200 and a non-empty token string"
+    },
+    {
+      "_id": "req_auth_token_accepted",
+      "_type": "request",
+      "parentId": "grp_auth_valid",
+      "name": "PUT /booking/:id — token accepted by protected endpoint",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"TokenVerified\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Issued token is accepted by protected endpoints"
+    },
+    {
+      "_id": "req_auth_basic_auth",
+      "_type": "request",
+      "parentId": "grp_auth_valid",
+      "name": "PUT /booking/:id — Basic Auth accepted",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Authorization", "value": "Basic YWRtaW46cGFzc3dvcmQxMjM=" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"BasicAuthUser\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Basic Auth header (admin:password123 base64) is also accepted by protected endpoints"
+    },
+
+    {
+      "_id": "req_auth_wrong_password",
+      "_type": "request",
+      "parentId": "grp_auth_invalid",
+      "name": "POST /auth — wrong password",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"username\": \"admin\",\n  \"password\": \"wrongpassword\"\n}"
+      },
+      "description": "Returns 'Bad credentials' for wrong password"
+    },
+    {
+      "_id": "req_auth_wrong_username",
+      "_type": "request",
+      "parentId": "grp_auth_invalid",
+      "name": "POST /auth — wrong username",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"username\": \"unknownuser\",\n  \"password\": \"password123\"\n}"
+      },
+      "description": "Returns 'Bad credentials' for wrong username"
+    },
+    {
+      "_id": "req_auth_both_wrong",
+      "_type": "request",
+      "parentId": "grp_auth_invalid",
+      "name": "POST /auth — both username and password wrong",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"username\": \"hacker\",\n  \"password\": \"hack1234\"\n}"
+      },
+      "description": "Returns 'Bad credentials' when both are wrong"
+    },
+    {
+      "_id": "req_auth_empty_strings",
+      "_type": "request",
+      "parentId": "grp_auth_invalid",
+      "name": "POST /auth — empty string credentials",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"username\": \"\",\n  \"password\": \"\"\n}"
+      },
+      "description": "Does not return a token for empty string credentials"
+    },
+
+    {
+      "_id": "req_auth_missing_username",
+      "_type": "request",
+      "parentId": "grp_auth_malformed",
+      "name": "POST /auth — missing username",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"password\": \"password123\"\n}"
+      },
+      "description": "Does not return a token when username is missing"
+    },
+    {
+      "_id": "req_auth_missing_password",
+      "_type": "request",
+      "parentId": "grp_auth_malformed",
+      "name": "POST /auth — missing password",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"username\": \"admin\"\n}"
+      },
+      "description": "Does not return a token when password is missing"
+    },
+    {
+      "_id": "req_auth_empty_body",
+      "_type": "request",
+      "parentId": "grp_auth_malformed",
+      "name": "POST /auth — empty body",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "description": "Does not return a token for an empty body"
+    },
+
+    {
+      "_id": "req_auth_put_no_auth",
+      "_type": "request",
+      "parentId": "grp_auth_protected",
+      "name": "PUT /booking/:id — 403 no auth",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Returns 403 when no auth is provided"
+    },
+    {
+      "_id": "req_auth_patch_no_auth",
+      "_type": "request",
+      "parentId": "grp_auth_protected",
+      "name": "PATCH /booking/:id — 403 no auth",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"NoAuth\"\n}"
+      },
+      "description": "Returns 403 when no auth is provided"
+    },
+    {
+      "_id": "req_auth_delete_no_auth",
+      "_type": "request",
+      "parentId": "grp_auth_protected",
+      "name": "DELETE /booking/:id — 403 no auth",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Returns 403 when no auth is provided"
+    },
+    {
+      "_id": "req_auth_put_invalid_token",
+      "_type": "request",
+      "parentId": "grp_auth_protected",
+      "name": "PUT /booking/:id — 403 invalid token",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token=thisIsNotAValidToken" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Returns 403 for an invalid token"
+    },
+    {
+      "_id": "req_auth_delete_invalid_token",
+      "_type": "request",
+      "parentId": "grp_auth_protected",
+      "name": "DELETE /booking/:id — 403 invalid token",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token=thisIsNotAValidToken" }
+      ],
+      "description": "Returns 403 for an invalid token"
+    },
+
+    {
+      "_id": "grp_crud_create",
+      "_type": "request_group",
+      "parentId": "grp_crud",
+      "name": "POST /booking — Create"
+    },
+    {
+      "_id": "grp_crud_list",
+      "_type": "request_group",
+      "parentId": "grp_crud",
+      "name": "GET /booking — List"
+    },
+    {
+      "_id": "grp_crud_read",
+      "_type": "request_group",
+      "parentId": "grp_crud",
+      "name": "GET /booking/:id — Read"
+    },
+    {
+      "_id": "grp_crud_put",
+      "_type": "request_group",
+      "parentId": "grp_crud",
+      "name": "PUT /booking/:id — Full update"
+    },
+    {
+      "_id": "grp_crud_patch",
+      "_type": "request_group",
+      "parentId": "grp_crud",
+      "name": "PATCH /booking/:id — Partial update"
+    },
+    {
+      "_id": "grp_crud_delete",
+      "_type": "request_group",
+      "parentId": "grp_crud",
+      "name": "DELETE /booking/:id — Delete"
+    },
+    {
+      "_id": "grp_crud_health",
+      "_type": "request_group",
+      "parentId": "grp_crud",
+      "name": "GET /ping — Health check"
+    },
+
+    {
+      "_id": "req_create_booking",
+      "_type": "request",
+      "parentId": "grp_crud_create",
+      "name": "POST /booking — create valid booking",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Returns 200 and the created booking with a numeric ID"
+    },
+    {
+      "_id": "req_create_booking_no_needs",
+      "_type": "request",
+      "parentId": "grp_crud_create",
+      "name": "POST /booking — without additionalneeds",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  }\n}"
+      },
+      "description": "Creates a booking without the optional additionalneeds field"
+    },
+
+    {
+      "_id": "req_list_bookings",
+      "_type": "request",
+      "parentId": "grp_crud_list",
+      "name": "GET /booking — list all",
+      "method": "GET",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Returns 200 and an array of booking ID objects"
+    },
+    {
+      "_id": "req_list_filter_firstname",
+      "_type": "request",
+      "parentId": "grp_crud_list",
+      "name": "GET /booking?firstname — filter by firstname",
+      "method": "GET",
+      "url": "{{ _.base_url }}/booking",
+      "parameters": [
+        { "name": "firstname", "value": "John" }
+      ],
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Filters bookings by firstname query param"
+    },
+    {
+      "_id": "req_list_filter_lastname",
+      "_type": "request",
+      "parentId": "grp_crud_list",
+      "name": "GET /booking?lastname — filter by lastname",
+      "method": "GET",
+      "url": "{{ _.base_url }}/booking",
+      "parameters": [
+        { "name": "lastname", "value": "Doe" }
+      ],
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Filters bookings by lastname query param"
+    },
+    {
+      "_id": "req_list_filter_checkin",
+      "_type": "request",
+      "parentId": "grp_crud_list",
+      "name": "GET /booking?checkin — filter by checkin date",
+      "method": "GET",
+      "url": "{{ _.base_url }}/booking",
+      "parameters": [
+        { "name": "checkin", "value": "2025-01-01" }
+      ],
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Filters bookings by checkin date"
+    },
+    {
+      "_id": "req_list_filter_checkout",
+      "_type": "request",
+      "parentId": "grp_crud_list",
+      "name": "GET /booking?checkout — filter by checkout date",
+      "method": "GET",
+      "url": "{{ _.base_url }}/booking",
+      "parameters": [
+        { "name": "checkout", "value": "2025-12-31" }
+      ],
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Filters bookings by checkout date"
+    },
+    {
+      "_id": "req_list_filter_no_match",
+      "_type": "request",
+      "parentId": "grp_crud_list",
+      "name": "GET /booking?firstname — no match",
+      "method": "GET",
+      "url": "{{ _.base_url }}/booking",
+      "parameters": [
+        { "name": "firstname", "value": "ZZZNoSuchPersonXXX" }
+      ],
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Returns empty array or 404 when no bookings match the filter"
+    },
+
+    {
+      "_id": "req_get_booking",
+      "_type": "request",
+      "parentId": "grp_crud_read",
+      "name": "GET /booking/:id — read single booking",
+      "method": "GET",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Returns 200 and the booking details"
+    },
+    {
+      "_id": "req_get_booking_not_found",
+      "_type": "request",
+      "parentId": "grp_crud_read",
+      "name": "GET /booking/999999999 — not found",
+      "method": "GET",
+      "url": "{{ _.base_url }}/booking/999999999",
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Returns 404 for a non-existent booking ID"
+    },
+
+    {
+      "_id": "req_put_booking_token",
+      "_type": "request",
+      "parentId": "grp_crud_put",
+      "name": "PUT /booking/:id — full update with token",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"Jane\",\n  \"lastname\": \"Smith\",\n  \"totalprice\": 200,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2026-09-10\",\n    \"checkout\": \"2026-09-15\"\n  },\n  \"additionalneeds\": \"Lunch\"\n}"
+      },
+      "description": "Returns 200 and replaces all booking fields"
+    },
+    {
+      "_id": "req_put_booking_basic_auth",
+      "_type": "request",
+      "parentId": "grp_crud_put",
+      "name": "PUT /booking/:id — full update with Basic Auth",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Authorization", "value": "Basic YWRtaW46cGFzc3dvcmQxMjM=" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"Jane\",\n  \"lastname\": \"Smith\",\n  \"totalprice\": 200,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2026-09-10\",\n    \"checkout\": \"2026-09-15\"\n  },\n  \"additionalneeds\": \"Lunch\"\n}"
+      },
+      "description": "Accepts Basic Auth instead of cookie token"
+    },
+    {
+      "_id": "req_put_booking_no_auth",
+      "_type": "request",
+      "parentId": "grp_crud_put",
+      "name": "PUT /booking/:id — 403 without authentication",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"Jane\",\n  \"lastname\": \"Smith\",\n  \"totalprice\": 200,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2026-09-10\",\n    \"checkout\": \"2026-09-15\"\n  },\n  \"additionalneeds\": \"Lunch\"\n}"
+      },
+      "description": "Returns 403 without authentication"
+    },
+    {
+      "_id": "req_put_booking_not_found",
+      "_type": "request",
+      "parentId": "grp_crud_put",
+      "name": "PUT /booking/999999999 — 405 non-existent ID",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/999999999",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"Jane\",\n  \"lastname\": \"Smith\",\n  \"totalprice\": 200,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2026-09-10\",\n    \"checkout\": \"2026-09-15\"\n  },\n  \"additionalneeds\": \"Lunch\"\n}"
+      },
+      "description": "Returns 405 for a non-existent booking ID"
+    },
+
+    {
+      "_id": "req_patch_firstname",
+      "_type": "request",
+      "parentId": "grp_crud_patch",
+      "name": "PATCH /booking/:id — update firstname only",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"Patched\"\n}"
+      },
+      "description": "Returns 200 when updating only firstname"
+    },
+    {
+      "_id": "req_patch_totalprice",
+      "_type": "request",
+      "parentId": "grp_crud_patch",
+      "name": "PATCH /booking/:id — update totalprice only",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"totalprice\": 9999\n}"
+      },
+      "description": "Can patch totalprice independently"
+    },
+    {
+      "_id": "req_patch_dates",
+      "_type": "request",
+      "parentId": "grp_crud_patch",
+      "name": "PATCH /booking/:id — update bookingdates",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"bookingdates\": {\n    \"checkin\": \"2027-01-01\",\n    \"checkout\": \"2027-01-10\"\n  }\n}"
+      },
+      "description": "Can patch nested bookingdates"
+    },
+    {
+      "_id": "req_patch_no_auth",
+      "_type": "request",
+      "parentId": "grp_crud_patch",
+      "name": "PATCH /booking/:id — 403 without authentication",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"NoAuth\"\n}"
+      },
+      "description": "Returns 403 without authentication"
+    },
+
+    {
+      "_id": "req_delete_token",
+      "_type": "request",
+      "parentId": "grp_crud_delete",
+      "name": "DELETE /booking/:id — with token (201)",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "description": "Returns 201 (not 204) on successful delete"
+    },
+    {
+      "_id": "req_delete_basic_auth",
+      "_type": "request",
+      "parentId": "grp_crud_delete",
+      "name": "DELETE /booking/:id — with Basic Auth (201)",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Authorization", "value": "Basic YWRtaW46cGFzc3dvcmQxMjM=" }
+      ],
+      "description": "Accepts Basic Auth for deletion"
+    },
+    {
+      "_id": "req_delete_no_auth",
+      "_type": "request",
+      "parentId": "grp_crud_delete",
+      "name": "DELETE /booking/:id — 403 without authentication",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Returns 403 without authentication"
+    },
+
+    {
+      "_id": "req_ping",
+      "_type": "request",
+      "parentId": "grp_crud_health",
+      "name": "GET /ping — health check",
+      "method": "GET",
+      "url": "{{ _.base_url }}/ping",
+      "headers": [
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "description": "Returns 201 when the API is up"
+    },
+
+    {
+      "_id": "grp_val_missing",
+      "_type": "request_group",
+      "parentId": "grp_validation",
+      "name": "Missing required fields"
+    },
+    {
+      "_id": "grp_val_dates",
+      "_type": "request_group",
+      "parentId": "grp_validation",
+      "name": "Missing bookingdates fields"
+    },
+    {
+      "_id": "grp_val_types",
+      "_type": "request_group",
+      "parentId": "grp_validation",
+      "name": "Wrong data types"
+    },
+    {
+      "_id": "grp_val_date_logic",
+      "_type": "request_group",
+      "parentId": "grp_validation",
+      "name": "[API GAP] Date logic validation"
+    },
+    {
+      "_id": "grp_val_boundary",
+      "_type": "request_group",
+      "parentId": "grp_validation",
+      "name": "Boundary and edge case values"
+    },
+    {
+      "_id": "grp_val_put",
+      "_type": "request_group",
+      "parentId": "grp_validation",
+      "name": "PUT /booking/:id — field validation"
+    },
+
+    {
+      "_id": "req_val_no_firstname",
+      "_type": "request",
+      "parentId": "grp_val_missing",
+      "name": "POST /booking — no firstname",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking with no firstname"
+    },
+    {
+      "_id": "req_val_no_lastname",
+      "_type": "request",
+      "parentId": "grp_val_missing",
+      "name": "POST /booking — no lastname",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking with no lastname"
+    },
+    {
+      "_id": "req_val_no_totalprice",
+      "_type": "request",
+      "parentId": "grp_val_missing",
+      "name": "POST /booking — no totalprice",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking with no totalprice"
+    },
+    {
+      "_id": "req_val_no_depositpaid",
+      "_type": "request",
+      "parentId": "grp_val_missing",
+      "name": "POST /booking — no depositpaid",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking with no depositpaid"
+    },
+    {
+      "_id": "req_val_no_bookingdates",
+      "_type": "request",
+      "parentId": "grp_val_missing",
+      "name": "POST /booking — no bookingdates",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking with no bookingdates object"
+    },
+    {
+      "_id": "req_val_empty_body",
+      "_type": "request",
+      "parentId": "grp_val_missing",
+      "name": "POST /booking — empty body",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "description": "Rejects a completely empty body"
+    },
+
+    {
+      "_id": "req_val_no_checkin",
+      "_type": "request",
+      "parentId": "grp_val_dates",
+      "name": "POST /booking — checkin missing",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking where checkin is missing"
+    },
+    {
+      "_id": "req_val_no_checkout",
+      "_type": "request",
+      "parentId": "grp_val_dates",
+      "name": "POST /booking — checkout missing",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking where checkout is missing"
+    },
+    {
+      "_id": "req_val_empty_bookingdates",
+      "_type": "request",
+      "parentId": "grp_val_dates",
+      "name": "POST /booking — bookingdates empty object",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {},\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking where bookingdates is an empty object"
+    },
+
+    {
+      "_id": "req_val_firstname_number",
+      "_type": "request",
+      "parentId": "grp_val_types",
+      "name": "POST /booking — firstname as number",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": 12345,\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Should reject or coerce firstname from number to string"
+    },
+    {
+      "_id": "req_val_totalprice_string",
+      "_type": "request",
+      "parentId": "grp_val_types",
+      "name": "[API GAP] POST /booking — totalprice as string",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": \"one hundred\",\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "[API GAP] The API accepts totalprice as a string — no type validation enforced"
+    },
+    {
+      "_id": "req_val_depositpaid_string",
+      "_type": "request",
+      "parentId": "grp_val_types",
+      "name": "POST /booking — depositpaid as string",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": \"yes\",\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Should reject a non-boolean value for depositpaid"
+    },
+    {
+      "_id": "req_val_bookingdates_string",
+      "_type": "request",
+      "parentId": "grp_val_types",
+      "name": "POST /booking — bookingdates as string",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": \"2026-08-01/2026-08-07\",\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a booking where bookingdates is a string instead of an object"
+    },
+
+    {
+      "_id": "req_val_invalid_checkin",
+      "_type": "request",
+      "parentId": "grp_val_date_logic",
+      "name": "[API GAP] POST /booking — invalid checkin date",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"not-a-date\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "[API GAP] Accepts an invalid checkin date string without rejecting"
+    },
+    {
+      "_id": "req_val_invalid_checkout",
+      "_type": "request",
+      "parentId": "grp_val_date_logic",
+      "name": "[API GAP] POST /booking — invalid checkout date",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"not-a-date\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "[API GAP] Accepts an invalid checkout date string without rejecting"
+    },
+    {
+      "_id": "req_val_checkout_before_checkin",
+      "_type": "request",
+      "parentId": "grp_val_date_logic",
+      "name": "[API GAP] POST /booking — checkout before checkin",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-10\",\n    \"checkout\": \"2026-08-01\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "[API GAP] Accepts checkout date before checkin without rejecting"
+    },
+    {
+      "_id": "req_val_same_day",
+      "_type": "request",
+      "parentId": "grp_val_date_logic",
+      "name": "[API GAP] POST /booking — same-day checkin and checkout",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-01\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "[API GAP] Accepts same-day checkin and checkout (zero-night stay)"
+    },
+
+    {
+      "_id": "req_val_totalprice_zero",
+      "_type": "request",
+      "parentId": "grp_val_boundary",
+      "name": "POST /booking — totalprice = 0",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 0,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Accepts totalprice of zero"
+    },
+    {
+      "_id": "req_val_totalprice_large",
+      "_type": "request",
+      "parentId": "grp_val_boundary",
+      "name": "POST /booking — very large totalprice",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 9999999,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Accepts a very large totalprice"
+    },
+    {
+      "_id": "req_val_depositpaid_false",
+      "_type": "request",
+      "parentId": "grp_val_boundary",
+      "name": "POST /booking — depositpaid = false",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": false,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Accepts depositpaid as false"
+    },
+    {
+      "_id": "req_val_special_chars",
+      "_type": "request",
+      "parentId": "grp_val_boundary",
+      "name": "POST /booking — special characters in name",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"O'Brien\",\n  \"lastname\": \"García-López\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Accepts firstname and lastname with special characters"
+    },
+    {
+      "_id": "req_val_long_needs",
+      "_type": "request",
+      "parentId": "grp_val_boundary",
+      "name": "POST /booking — very long additionalneeds",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"\n}"
+      },
+      "description": "Accepts a very long additionalneeds string (500 chars)"
+    },
+    {
+      "_id": "req_val_no_needs_optional",
+      "_type": "request",
+      "parentId": "grp_val_boundary",
+      "name": "POST /booking — additionalneeds omitted (optional)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/booking",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  }\n}"
+      },
+      "description": "Creates a booking when additionalneeds is omitted (optional field)"
+    },
+
+    {
+      "_id": "req_val_put_no_firstname",
+      "_type": "request",
+      "parentId": "grp_val_put",
+      "name": "PUT /booking/:id — missing firstname",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"bookingdates\": {\n    \"checkin\": \"2026-08-01\",\n    \"checkout\": \"2026-08-07\"\n  },\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a full update with missing firstname"
+    },
+    {
+      "_id": "req_val_put_no_dates",
+      "_type": "request",
+      "parentId": "grp_val_put",
+      "name": "PUT /booking/:id — missing bookingdates",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/booking/{{ _.booking_id }}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Accept", "value": "application/json" },
+        { "name": "Cookie", "value": "token={{ _.token }}" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"totalprice\": 150,\n  \"depositpaid\": true,\n  \"additionalneeds\": \"Breakfast\"\n}"
+      },
+      "description": "Rejects a full update with missing bookingdates"
+    }
+  ]
+}
