@@ -1,0 +1,17 @@
+{
+  "name": "restful-booker-tests",
+  "version": "1.0.0",
+  "description": "API test suite for restful-booker.herokuapp.com",
+  "scripts": {
+    "test": "jest --runInBand --forceExit",
+    "test:auth": "jest tests/01-auth.test.js --runInBand --forceExit",
+    "test:crud": "jest tests/02-booking-crud.test.js --runInBand --forceExit",
+    "test:validation": "jest tests/03-booking-validation.test.js --runInBand --forceExit"
+  },
+  "dependencies": {
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
